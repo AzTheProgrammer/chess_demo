@@ -1,0 +1,52 @@
+{
+  "lines": [
+    {
+      "id": "italian-main",
+      "eco": "C50",
+      "name": "Italian Game — Classical",
+      "side": "white",
+      "moves": ["e4", "e5", "Nf3", "Nc6", "Bc4", "Bc5", "c3", "Nf6"],
+      "description": "Solid development with c3 preparing d4."
+    },
+    {
+      "id": "queens-gambit-accepted",
+      "eco": "D20",
+      "name": "Queen's Gambit Accepted",
+      "side": "white",
+      "moves": ["d4", "d5", "c4", "dxc4", "Nf3", "Nf6", "e3", "e6"],
+      "description": "Recover the pawn with active piece play."
+    },
+    {
+      "id": "london-system",
+      "eco": "D02",
+      "name": "London System",
+      "side": "white",
+      "moves": ["d4", "d5", "Bf4", "Nf6", "e3", "e6", "Nd2", "c5"],
+      "description": "System opening with Bf4 before e3."
+    },
+    {
+      "id": "ruy-lopez-defense",
+      "eco": "C60",
+      "name": "Ruy Lopez — Morphy Defense",
+      "side": "black",
+      "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6"],
+      "description": "Classic response to the Ruy Lopez."
+    },
+    {
+      "id": "sicilian-najdorf-lite",
+      "eco": "B90",
+      "name": "Sicilian — Najdorf Lite",
+      "side": "black",
+      "moves": ["e4", "c5", "Nf3", "d6", "d4", "cxd4", "Nxd4", "Nf6"],
+      "description": "Enter the Najdorf structure vs 1.e4."
+    },
+    {
+      "id": "kings-indian-setup",
+      "eco": "E60",
+      "name": "King's Indian — Fianchetto",
+      "side": "black",
+      "moves": ["d4", "Nf6", "c4", "g6", "Nc3", "Bg7", "e4", "d6"],
+      "description": "Hypermodern setup against 1.d4."
+    }
+  ]
+}

@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chess App — Architecture Plan</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface-2: #242836;
+      --border: #2e3345;
+      --text: #e8eaef;
+      --muted: #9aa3b5;
+      --accent: #6c9eff;
+      --accent-soft: rgba(108, 158, 255, 0.12);
+      --success: #5dd39e;
+      --warning: #f0b429;
+      --danger: #f07178;
+      --radius: 12px;
+      --mono: "SF Mono", "Cascadia Code", Consolas, monospace;
+      --sans: "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem clamp(1rem, 4vw, 3rem) 4rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 2.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 4vw, 2.4rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 60ch;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+
+    .badge {
+      font-size: 0.8rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .badge.accent { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
+
+    nav.toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    nav.toc h2 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 0.75rem; }
+    nav.toc ol { padding-left: 1.25rem; }
+    nav.toc li { margin: 0.35rem 0; }
+    nav.toc a { color: var(--accent); text-decoration: none; }
+    nav.toc a:hover { text-decoration: underline; }
+
+    section {
+      margin-bottom: 2.5rem;
+      scroll-margin-top: 1rem;
+    }
+
+    h2 {
+      font-size: 1.45rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      margin: 1.5rem 0 0.75rem;
+      color: var(--accent);
+    }
+
+    p, li { color: var(--text); }
+    p { margin-bottom: 0.85rem; }
+    ul, ol { padding-left: 1.4rem; margin-bottom: 1rem; }
+    li { margin: 0.35rem 0; }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.1rem 1.25rem;
+    }
+
+    .card h4 { font-size: 0.95rem; margin-bottom: 0.4rem; }
+    .card p { font-size: 0.9rem; color: var(--muted); margin: 0; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.92rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 0.65rem 0.85rem;
+      border: 1px solid var(--border);
+    }
+
+    th { background: var(--surface-2); color: var(--muted); font-weight: 600; }
+    td { background: var(--surface); }
+
+    pre, code {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+    }
+
+    pre {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.15rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+      line-height: 1.5;
+    }
+
+    .diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin: 1rem 0;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      line-height: 1.45;
+      overflow-x: auto;
+      white-space: pre;
+      color: var(--muted);
+    }
+
+    .callout {
+      border-left: 3px solid var(--accent);
+      background: var(--accent-soft);
+      padding: 0.85rem 1rem;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin: 1rem 0;
+      font-size: 0.92rem;
+    }
+
+    .callout.warn { border-color: var(--warning); background: rgba(240, 180, 41, 0.1); }
+    .callout.ok { border-color: var(--success); background: rgba(93, 211, 158, 0.1); }
+
+    .phase {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin: 0.75rem 0;
+    }
+
+    .phase-num {
+      flex-shrink: 0;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .phase-body h4 { margin-bottom: 0.35rem; }
+    .phase-body p { font-size: 0.9rem; color: var(--muted); margin: 0; }
+
+    footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Chess App — Architecture Plan</h1>
+  <p class="subtitle">
+    Flutter application for playing vs. a bot, analyzing games from Lichess and Chess.com,
+    learning openings and tactics, and mastering board coordinates through a mini-game.
+  </p>
+  <div class="meta">
+    <span class="badge accent">Expansion Lab · EXP-6</span>
+    <span class="badge">Flutter 3.x</span>
+    <span class="badge">Mobile-first</span>
+    <span class="badge">Revision 2</span>
+    <span class="badge">2026-06-13</span>
+  </div>
+</header>
+
+<nav class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#vision">Product Vision &amp; Success Criteria</a></li>
+    <li><a href="#stack">Technology Stack</a></li>
+    <li><a href="#architecture">System Architecture</a></li>
+    <li><a href="#modules">Feature Modules</a></li>
+    <li><a href="#data">Data &amp; Integrations</a></li>
+    <li><a href="#ui">UI / UX Direction</a></li>
+    <li><a href="#phases">Phased Delivery</a></li>
+    <li><a href="#risks">Risks &amp; Decisions</a></li>
+    <li><a href="#monetization">Monetization Hypothesis</a></li>
+  </ol>
+</nav>
+
+<section id="vision">
+  <h2>1. Product Vision &amp; Success Criteria</h2>
+  <p>
+    A single Flutter app that helps players <strong>play</strong>, <strong>analyze</strong>,
+    and <strong>train</strong> — with an elegant, distraction-free interface. The first shippable
+    slice proves the core loop: play a bot game, review it, and complete one training exercise.
+  </p>
+
+  <h3>Core user journeys</h3>
+  <div class="card-grid">
+    <div class="card">
+      <h4>Play vs Bot</h4>
+      <p>Start a game at chosen difficulty, make legal moves, resign/draw, see result and basic stats.</p>
+    </div>
+    <div class="card">
+      <h4>Analyze Games</h4>
+      <p>Import PGN from Lichess or Chess.com (URL or paste), step through moves, see engine eval.</p>
+    </div>
+    <div class="card">
+      <h4>Learn Openings</h4>
+      <p>Browse opening tree, drill lines with spaced repetition, track mastery per line.</p>
+    </div>
+    <div class="card">
+      <h4>Practice Tactics</h4>
+      <p>Daily puzzle queue, rating-adjusted difficulty, streak and accuracy tracking.</p>
+    </div>
+    <div class="card">
+      <h4>Square Trainer</h4>
+      <p>Mini-game: prompt a square name (e.g. "e4"), user taps the correct square under time pressure.</p>
+    </div>
+  </div>
+
+  <div class="callout ok">
+    <strong>Success condition for this plan ticket:</strong> CEO approves architecture and phased scope.
+    Implementation tickets can then be created per phase with clear acceptance criteria.
+  </div>
+</section>
+
+<section id="stack">
+  <h2>2. Technology Stack</h2>
+
+  <table>
+    <thead>
+      <tr><th>Layer</th><th>Choice</th><th>Rationale</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Framework</td>
+        <td><strong>Flutter 3.x</strong> (Dart 3)</td>
+        <td>Single codebase for iOS/Android; strong custom painting for board UI; fast iteration.</td>
+      </tr>
+      <tr>
+        <td>State management</td>
+        <td><strong>flutter_bloc</strong> + <strong>equatable</strong></td>
+        <td>Event-driven, explicit state transitions; excellent testability via bloc_test; widely adopted Flutter pattern per CEO direction.</td>
+      </tr>
+      <tr>
+        <td>Routing</td>
+        <td><strong>go_router</strong></td>
+        <td>Declarative deep links for shared game/analysis URLs later.</td>
+      </tr>
+      <tr>
+        <td>Chess rules</td>
+        <td><strong>chess package</strong> (Dart)</td>
+        <td>Legal move generation, FEN/PGN, check/checkmate. Avoid reinventing rules engine.</td>
+      </tr>
+      <tr>
+        <td>Engine</td>
+        <td><strong>Stockfish via flutter_stockfish</strong> or FFI wrapper</td>
+        <td>Local analysis and bot play. No server cost for v1. WASM/FFI path TBD in spike.</td>
+      </tr>
+      <tr>
+        <td>Local storage</td>
+        <td><strong>drift (SQLite)</strong> + <strong>shared_preferences</strong></td>
+        <td>Games, puzzles, opening progress, settings. Offline-first.</td>
+      </tr>
+      <tr>
+        <td>HTTP</td>
+        <td><strong>http</strong> + thin API clients</td>
+        <td>Lichess public API; Chess.com pubapi. No auth required for read-only game fetch.</td>
+      </tr>
+      <tr>
+        <td>UI</td>
+        <td><strong>Material 3</strong> + custom theme tokens</td>
+        <td>Modern baseline; board and pieces are custom widgets for brand control.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout warn">
+    <strong>One-way door to flag:</strong> Stockfish FFI integration is the highest-risk technical bet.
+    Phase 0 spike validates engine startup latency and binary size on target devices before committing.
+  </div>
+</section>
+
+<section id="architecture">
+  <h2>3. System Architecture</h2>
+
+  <p>Clean architecture with feature-first folders. Dependencies point inward: UI → application → domain → infrastructure.</p>
+
+  <div class="diagram">┌─────────────────────────────────────────────────────────────┐
+│                        Presentation                          │
+│  screens · widgets · theme · animations                      │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+┌──────────────────────────▼──────────────────────────────────┐
+│                      Application Layer                       │
+│  Blocs/Cubits · events · states · use-case orchestration     │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+┌──────────────────────────▼──────────────────────────────────┐
+│                        Domain Layer                          │
+│  entities (Game, Move, Puzzle, OpeningLine) · repositories   │
+│  (interfaces) · services (ChessRules, Analysis, BotPolicy)   │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+┌──────────────────────────▼──────────────────────────────────┐
+│                     Infrastructure Layer                     │
+│  drift DB · lichess_client · chesscom_client · stockfish   │
+│  · pgn_parser · asset bundles (openings, puzzles)            │
+└─────────────────────────────────────────────────────────────┘</div>
+
+  <h3>Project structure</h3>
+  <pre>lib/
+├── main.dart
+├── app.dart                    # MaterialApp, router, theme
+├── core/
+│   ├── theme/                  # colors, typography, board themes
+│   ├── widgets/                # shared UI (buttons, cards, board shell)
+│   ├── utils/                  # result types, extensions
+│   └── constants/
+├── features/                   # each feature: bloc/ · view/ · widgets/
+│   ├── play/                   # PlayBloc — vs bot game flow
+│   ├── analysis/               # AnalysisBloc — import + replay + eval
+│   ├── openings/               # OpeningsBloc — repertoire + drills
+│   ├── tactics/                # TacticsBloc — puzzles + streaks
+│   ├── square_trainer/         # SquareTrainerCubit — coordinate mini-game
+│   ├── home/                   # HomeCubit — dashboard hub
+│   └── settings/               # SettingsCubit — theme, preferences
+└── infrastructure/
+    ├── chess/                  # rules wrapper, FEN/PGN helpers
+    ├── engine/                 # stockfish adapter
+    ├── database/               # drift schemas + DAOs
+    └── remote/                 # lichess + chess.com clients</pre>
+
+  <h3>Bloc conventions</h3>
+  <ul>
+    <li><strong>Bloc</strong> for multi-step flows with events (play, analysis, tactics, openings).</li>
+    <li><strong>Cubit</strong> for simple toggle/load state (settings, square trainer, home).</li>
+    <li>Inject repositories via constructor; register blocs in <code>MultiBlocProvider</code> at route or app level.</li>
+    <li>Test with <code>bloc_test</code> — assert event → state sequences for game moves, puzzle solves, imports.</li>
+  </ul>
+
+  <h3>Key design principles</h3>
+  <ul>
+    <li><strong>Reversibility:</strong> Feature modules are loosely coupled; each can ship independently behind routes.</li>
+    <li><strong>Operational simplicity:</strong> v1 is fully offline-capable except optional game import.</li>
+    <li><strong>Evidence over opinion:</strong> Ship Phase 1, measure retention on play+analyze loop before expanding training depth.</li>
+    <li><strong>Scope hammer:</strong> Bot uses fixed depth/time limits per tier — no Elo estimation engine in v1.</li>
+  </ul>
+</section>
+
+<section id="modules">
+  <h2>4. Feature Modules</h2>
+
+  <h3>4.1 Play vs Bot</h3>
+  <ul>
+    <li>Board widget: 8×8 grid, drag-and-drop + tap-to-move, legal move highlights, last-move highlight.</li>
+    <li>Bot difficulties: Beginner (depth 1), Intermediate (depth 8), Advanced (depth 14) — tuned after spike.</li>
+    <li>Game state: <code>Chess</code> instance in memory; persist to DB on exit or game end.</li>
+    <li>Post-game: link to analysis view with local PGN.</li>
+  </ul>
+
+  <h3>4.2 Game Analysis</h3>
+  <ul>
+    <li><strong>Import paths:</strong> paste PGN, pick local saved game, fetch by Lichess game ID/URL, fetch Chess.com game (username + date or PGN download URL).</li>
+    <li><strong>Replay UI:</strong> move list, keyboard/gesture prev-next, jump to position, flip board.</li>
+    <li><strong>Engine overlay:</strong> eval bar, best move arrow (optional), blunder markers on move list (Phase 2).</li>
+    <li>Parse with domain <code>PgnService</code>; normalize to internal <code>GameRecord</code> model.</li>
+  </ul>
+
+  <h3>4.3 Openings Trainer</h3>
+  <ul>
+    <li>Seed data: ECO-grouped opening lines as bundled JSON/SQLite (100–200 lines for MVP).</li>
+    <li>Drill mode: app plays opponent moves; user plays correct responses; hints after N failures.</li>
+    <li>Progress: per-line completion %, last practiced date (spaced repetition lite).</li>
+  </ul>
+
+  <h3>4.4 Tactics Trainer</h3>
+  <ul>
+    <li>Puzzle source: bundled Lichess puzzle dump subset (filtered by rating band) or CSV import.</li>
+    <li>Modes: daily puzzle (1/day), practice queue (10 puzzles), timed rush (Phase 3).</li>
+    <li>Feedback: correct/incorrect animation, solution line reveal, puzzle rating adjustment locally.</li>
+  </ul>
+
+  <h3>4.5 Square Name Mini-Game</h3>
+  <ul>
+    <li>Modes: <em>Find square</em> (prompt → tap), <em>Name square</em> (tap → type/select), <em>Timed blast</em> (30s score attack).</li>
+    <li>Orientation toggle: white-bottom / black-bottom.</li>
+    <li>Scoring: accuracy %, best streak, personal bests stored locally.</li>
+    <li>Low implementation cost — good Phase 1 quick win for engagement.</li>
+  </ul>
+</section>
+
+<section id="data">
+  <h2>5. Data &amp; Integrations</h2>
+
+  <h3>Local database (drift)</h3>
+  <table>
+    <thead>
+      <tr><th>Table</th><th>Purpose</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>games</code></td><td>PGN, result, played_at, source (local/lichess/chesscom)</td></tr>
+      <tr><td><code>puzzle_attempts</code></td><td>puzzle_id, solved, time_ms, attempted_at</td></tr>
+      <tr><td><code>opening_progress</code></td><td>line_id, mastery_score, last_practiced</td></tr>
+      <tr><td><code>square_trainer_stats</code></td><td>mode, score, accuracy, played_at</td></tr>
+      <tr><td><code>settings</code></td><td>theme, board style, engine depth, default difficulty</td></tr>
+    </tbody>
+  </table>
+
+  <h3>External APIs (read-only, no OAuth in v1)</h3>
+  <table>
+    <thead>
+      <tr><th>Source</th><th>Endpoint pattern</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Lichess</td>
+        <td><code>GET /game/export/{gameId}</code></td>
+        <td>PGN export; respect rate limits; User-Agent required.</td>
+      </tr>
+      <tr>
+        <td>Chess.com</td>
+        <td><code>GET /pub/player/{user}/games/{YYYY}/{MM}</code></td>
+        <td>Returns JSON; convert to PGN or use provided PGN link per game.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>Security note:</strong> No credentials stored in v1. If we add OAuth or paid API keys later,
+    escalate for SecurityEngineer review before implementation.
+  </div>
+</section>
+
+<section id="ui">
+  <h2>6. UI / UX Direction</h2>
+
+  <p>Target aesthetic: <strong>quiet luxury</strong> — dark-first theme, soft contrast, generous whitespace, subtle motion.</p>
+
+  <h3>Design tokens (initial)</h3>
+  <ul>
+    <li>Background: deep charcoal (#0F1117)</li>
+    <li>Surface cards: #1A1D27 with 1px #2E3345 borders</li>
+    <li>Accent: muted gold or periwinkle (final palette pending UXDesigner)</li>
+    <li>Board themes: classic walnut, midnight blue, tournament green</li>
+    <li>Piece set: SVG neo-classical (bundled assets, scalable)</li>
+    <li>Typography: system UI + monospace for notation/eval</li>
+  </ul>
+
+  <h3>Navigation</h3>
+  <p>Bottom nav (mobile): Home · Play · Train · Analyze · Profile/Settings.</p>
+  <p>Train hub sub-routes: Openings, Tactics, Square Trainer.</p>
+
+  <h3>UXDesigner handoff</h3>
+  <p>Before Phase 1 build, request UXDesigner for: home dashboard wireframe, board widget spec, and train hub flows.</p>
+</section>
+
+<section id="phases">
+  <h2>7. Phased Delivery</h2>
+
+  <div class="phase">
+    <div class="phase-num">0</div>
+    <div class="phase-body">
+      <h4>Spike (3–5 days)</h4>
+      <p>Flutter project scaffold, chess package integration, Stockfish FFI proof, empty board widget with move input.</p>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-num">1</div>
+    <div class="phase-body">
+      <h4>MVP — Play + Square Trainer (2 weeks)</h4>
+      <p>Bot game end-to-end, game persistence, square trainer mini-game, settings, dark theme. Proves core engagement.</p>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-num">2</div>
+    <div class="phase-body">
+      <h4>Analysis + Import (2 weeks)</h4>
+      <p>PGN paste, local replay, Lichess/Chess.com fetch, eval bar with Stockfish.</p>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-num">3</div>
+    <div class="phase-body">
+      <h4>Training Depth (2–3 weeks)</h4>
+      <p>Openings drill mode, tactics puzzle queue, blunder highlighting in analysis, puzzle rush.</p>
+    </div>
+  </div>
+
+  <h3>Proposed child issues (post-approval)</h3>
+  <ul>
+    <li>EXP-7: Phase 0 spike — Stockfish + board widget</li>
+    <li>EXP-8: Phase 1 — Play vs bot + square trainer</li>
+    <li>EXP-9: Phase 2 — Analysis + Lichess/Chess.com import</li>
+    <li>EXP-10: Phase 3 — Openings + tactics trainers</li>
+    <li>EXP-11: UX design pass — wireframes and component spec</li>
+  </ul>
+</section>
+
+<section id="risks">
+  <h2>8. Risks &amp; Decisions</h2>
+
+  <table>
+    <thead>
+      <tr><th>Risk</th><th>Impact</th><th>Mitigation</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Stockfish binary size / perf on low-end Android</td>
+        <td>High</td>
+        <td>Phase 0 spike; fallback to lighter bot (random + shallow minimax) for Beginner tier.</td>
+      </tr>
+      <tr>
+        <td>Chess.com API shape changes</td>
+        <td>Medium</td>
+        <td>Abstract behind <code>GameImportRepository</code>; PGN paste always works.</td>
+      </tr>
+      <tr>
+        <td>Scope creep on training features</td>
+        <td>High</td>
+        <td>Phase gates; ship MVP before openings/tactics depth.</td>
+      </tr>
+      <tr>
+        <td>Offline puzzle/opening data freshness</td>
+        <td>Low</td>
+        <td>Bundled datasets versioned; optional CDN update in v2.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>CEO decisions requested</h3>
+  <ol>
+    <li>Approve phased scope above (MVP = Play + Square Trainer first)?</li>
+    <li>Target platforms for v1: Android + iOS, or Android-only initially?</li>
+    <li>Hire UXDesigner before Phase 1 UI build?</li>
+    <li>Monetization timing: free MVP first, or freemium from Phase 2?</li>
+  </ol>
+</section>
+
+<section id="monetization">
+  <h2>9. Monetization Hypothesis</h2>
+
+  <p>Every build should have a plausible validation path. Recommended model:</p>
+
+  <ul>
+    <li><strong>Free tier:</strong> Play vs bot (limited daily games), square trainer, 3 puzzles/day, basic analysis.</li>
+    <li><strong>Pro subscription (~$4.99/mo):</strong> Unlimited games, full tactics queue, openings repertoire, deep engine analysis, no ads.</li>
+    <li><strong>Validation metric:</strong> 7-day retention on users who complete ≥1 bot game + ≥1 training session.</li>
+  </ul>
+
+  <p>Defer payment integration until Phase 2 proves retention. Use local feature flags to gate Pro features during development.</p>
+</section>
+
+<footer>
+  <p>Prepared by CTO · Expansion Lab · Issue <strong>EXP-6</strong></p>
+  <p>Next step: CEO approval → create implementation child issues per phase.</p>
+</footer>
+
+</body>
+</html>

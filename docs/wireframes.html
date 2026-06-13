@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chess App — Wireframes v1</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface-2: #242836;
+      --border: #2e3345;
+      --text: #e8eaef;
+      --muted: #9aa3b5;
+      --accent: #6c9eff;
+      --accent-soft: rgba(108, 158, 255, 0.12);
+      --success: #5dd39e;
+      --warning: #f0b429;
+      --radius: 12px;
+      --mono: "SF Mono", "Cascadia Code", Consolas, monospace;
+      --sans: "Segoe UI", system-ui, -apple-system, sans-serif;
+      --board-light: #eeeed2;
+      --board-dark: #769656;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem clamp(1rem, 4vw, 3rem) 4rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .subtitle { color: var(--muted); max-width: 65ch; }
+
+    nav.toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+    }
+    nav.toc h2 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 0.75rem; }
+    nav.toc ol { padding-left: 1.25rem; }
+    nav.toc a { color: var(--accent); text-decoration: none; }
+    nav.toc a:hover { text-decoration: underline; }
+
+    section { margin-bottom: 3rem; scroll-margin-top: 1rem; }
+    h2 { font-size: 1.45rem; margin-bottom: 0.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+    h3 { font-size: 1rem; color: var(--accent); margin: 1.25rem 0 0.75rem; }
+    p, li { color: var(--muted); font-size: 0.92rem; }
+    p { margin-bottom: 0.75rem; }
+    ul { padding-left: 1.4rem; margin-bottom: 1rem; }
+
+    .lens-tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      margin-right: 0.35rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .wireframe-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin: 1.25rem 0;
+    }
+
+    /* Phone frame */
+    .phone {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      max-width: 375px;
+      margin: 0 auto;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    .phone-status {
+      height: 28px;
+      background: var(--surface-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      color: var(--muted);
+    }
+
+    .app-bar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .app-bar.with-action {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .screen-body {
+      padding: 16px;
+      min-height: 520px;
+      background: var(--bg);
+    }
+
+    .greeting {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .subtext {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .section-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+      margin: 24px 0 8px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      cursor: default;
+    }
+
+    .card-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--accent-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .card-text { flex: 1; }
+    .card-title { font-size: 0.95rem; font-weight: 600; color: var(--text); }
+    .card-sub { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+    .card-chevron { color: var(--muted); font-size: 0.75rem; }
+
+    .empty-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .nav-bar {
+      display: flex;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 8px 0 12px;
+    }
+
+    .nav-item {
+      flex: 1;
+      text-align: center;
+      font-size: 0.65rem;
+      color: var(--muted);
+      padding: 4px;
+    }
+
+    .nav-item.active { color: var(--accent); }
+    .nav-item .icon { font-size: 1.1rem; display: block; margin-bottom: 2px; }
+
+    /* Board */
+    .board {
+      aspect-ratio: 1;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .sq { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+    .sq.light { background: var(--board-light); }
+    .sq.dark { background: var(--board-dark); }
+    .sq.selected { background: rgba(255,255,0,0.55) !important; }
+    .sq.last { background: rgba(255,255,0,0.35) !important; }
+    .sq.target::after {
+      content: '';
+      width: 28%;
+      height: 28%;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.4);
+    }
+
+    .status-line {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin: 8px 0;
+    }
+
+    .btn-primary {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .btn-secondary {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .eval-bar {
+      margin-bottom: 12px;
+    }
+
+    .eval-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      margin-bottom: 6px;
+    }
+
+    .eval-track {
+      height: 12px;
+      background: #333;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .eval-fill {
+      height: 100%;
+      width: 58%;
+      background: white;
+    }
+
+    .move-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+      margin: 12px 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .move-controls span { padding: 0 8px; }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .chip {
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      background: var(--surface-2);
+      color: var(--muted);
+      font-family: var(--mono);
+    }
+
+    .chip.selected { background: var(--accent-soft); color: var(--accent); }
+
+    .settings-group {
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .settings-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+      padding: 0 16px 8px;
+    }
+
+    .settings-desc {
+      font-size: 0.78rem;
+      color: var(--muted);
+      padding: 0 16px 12px;
+    }
+
+    .segmented {
+      display: flex;
+      margin: 0 16px;
+      background: var(--surface-2);
+      border-radius: 8px;
+      padding: 4px;
+      gap: 4px;
+    }
+
+    .seg-btn {
+      flex: 1;
+      padding: 8px 4px;
+      text-align: center;
+      font-size: 0.75rem;
+      border-radius: 6px;
+      color: var(--muted);
+    }
+
+    .seg-btn.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .switch-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+    }
+
+    .empty-icon { font-size: 3rem; color: var(--border); margin-bottom: 16px; }
+
+    .annotation {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin-top: 1rem;
+    }
+
+    .annotation h4 { font-size: 0.85rem; color: var(--text); margin-bottom: 0.5rem; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Chess App — Wireframes v1</h1>
+  <p class="subtitle">
+    Low-fidelity layout specs for Home, Play, Train hub, Analyze, and Settings.
+    Companion to <a href="design-system.md" style="color:var(--accent)">design-system.md</a>
+    and <a href="board-component-spec.md" style="color:var(--accent)">board-component-spec.md</a>.
+  </p>
+</header>
+
+<nav class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#home">Home dashboard</a></li>
+    <li><a href="#play">Play vs Bot</a></li>
+    <li><a href="#train">Train hub</a></li>
+    <li><a href="#analyze">Analyze</a></li>
+    <li><a href="#settings">Settings</a></li>
+    <li><a href="#flows">Cross-surface flows</a></li>
+  </ol>
+</nav>
+
+<!-- HOME -->
+<section id="home">
+  <h2>1. Home dashboard</h2>
+  <p>Entry point. Chunked action cards + recent games list. Primary play path is one tap away.</p>
+  <div>
+    <span class="lens-tag">Chunking</span>
+    <span class="lens-tag">Goal-Gradient</span>
+    <span class="lens-tag">Recognition over Recall</span>
+  </div>
+
+  <div class="wireframe-grid">
+    <div class="phone">
+      <div class="phone-status">9:41</div>
+      <div class="app-bar">Chess</div>
+      <div class="screen-body">
+        <div class="greeting">Welcome back</div>
+        <div class="subtext">Play, analyze, drill openings, and solve tactics.</div>
+
+        <div class="card">
+          <div class="card-icon">🎓</div>
+          <div class="card-text">
+            <div class="card-title">Train</div>
+            <div class="card-sub">Openings, tactics &amp; square drills</div>
+          </div>
+          <div class="card-chevron">›</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">♟</div>
+          <div class="card-text">
+            <div class="card-title">Play vs Bot</div>
+            <div class="card-sub">Difficulty: Intermediate</div>
+          </div>
+          <div class="card-chevron">›</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">▦</div>
+          <div class="card-text">
+            <div class="card-title">Square Trainer</div>
+            <div class="card-sub">Learn file &amp; rank names</div>
+          </div>
+          <div class="card-chevron">›</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📊</div>
+          <div class="card-text">
+            <div class="card-title">Analyze Game</div>
+            <div class="card-sub">Import PGN, Lichess, or Chess.com</div>
+          </div>
+          <div class="card-chevron">›</div>
+        </div>
+
+        <div class="section-label">Recent games</div>
+        <div class="empty-card">No saved games yet. Start a bot game!</div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-item active"><span class="icon">🏠</span>Home</div>
+        <div class="nav-item"><span class="icon">♟</span>Play</div>
+        <div class="nav-item"><span class="icon">🎓</span>Train</div>
+        <div class="nav-item"><span class="icon">📊</span>Analyze</div>
+        <div class="nav-item"><span class="icon">⚙</span>Settings</div>
+      </div>
+    </div>
+
+    <div class="phone">
+      <div class="phone-status">9:41 — With history</div>
+      <div class="app-bar">Chess</div>
+      <div class="screen-body">
+        <div class="greeting">Welcome back</div>
+        <div class="subtext">Play, analyze, drill openings, and solve tactics.</div>
+        <div class="card"><div class="card-icon">♟</div><div class="card-text"><div class="card-title">Play vs Bot</div><div class="card-sub">Difficulty: Intermediate</div></div><div class="card-chevron">›</div></div>
+        <div class="section-label">Recent games</div>
+        <div class="card" style="margin-bottom:8px">
+          <div class="card-text">
+            <div class="card-title">1-0 vs bot</div>
+            <div class="card-sub">Intermediate · 2026-06-12</div>
+          </div>
+          <div class="card-chevron">›</div>
+        </div>
+        <div class="card" style="margin-bottom:8px">
+          <div class="card-text">
+            <div class="card-title">½-½ vs bot</div>
+            <div class="card-sub">Beginner · 2026-06-11</div>
+          </div>
+          <div class="card-chevron">›</div>
+        </div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-item active"><span class="icon">🏠</span>Home</div>
+        <div class="nav-item"><span class="icon">♟</span>Play</div>
+        <div class="nav-item"><span class="icon">🎓</span>Train</div>
+        <div class="nav-item"><span class="icon">📊</span>Analyze</div>
+        <div class="nav-item"><span class="icon">⚙</span>Settings</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="annotation">
+    <h4>Interaction notes</h4>
+    <ul>
+      <li>Recent game tap → Analyze with preloaded game (deep link)</li>
+      <li>Play card shows current bot difficulty from Settings (Recognition)</li>
+      <li>Square Trainer shortcut on Home for quick access; also in Train hub</li>
+      <li>Card order: Train first (engagement loop), Play second (core action)</li>
+    </ul>
+  </div>
+</section>
+
+<!-- PLAY -->
+<section id="play">
+  <h2>2. Play vs Bot</h2>
+  <p>Board-first layout. Status + actions below board. Post-game reveals Analyze CTA.</p>
+  <div>
+    <span class="lens-tag">Fitts's Law</span>
+    <span class="lens-tag">Feedback</span>
+    <span class="lens-tag">Flow</span>
+  </div>
+
+  <div class="wireframe-grid">
+    <div class="phone">
+      <div class="phone-status">In game</div>
+      <div class="app-bar">Play vs Bot</div>
+      <div class="screen-body">
+        <div class="board">
+          <!-- simplified 8x8 with a few pieces -->
+          <div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div>
+          <div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div>
+          <div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div>
+          <div class="sq light"></div><div class="sq dark"></div><div class="sq light selected">♘</div><div class="sq dark target"></div><div class="sq light target"></div><div class="sq dark target"></div><div class="sq light target"></div><div class="sq dark"></div>
+          <div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div>
+          <div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div>
+          <div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div>
+          <div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div>
+        </div>
+        <div class="status-line">Your turn · Intermediate bot</div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-item"><span class="icon">🏠</span>Home</div>
+        <div class="nav-item active"><span class="icon">♟</span>Play</div>
+        <div class="nav-item"><span class="icon">🎓</span>Train</div>
+        <div class="nav-item"><span class="icon">📊</span>Analyze</div>
+        <div class="nav-item"><span class="icon">⚙</span>Settings</div>
+      </div>
+    </div>
+
+    <div class="phone">
+      <div class="phone-status">Game over</div>
+      <div class="app-bar">Play vs Bot</div>
+      <div class="screen-body">
+        <div class="board">
+          <div class="sq dark last"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div>
+          <div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div>
+          <div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div>
+          <div class="sq light"></div><div class="sq dark last">♚</div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div>
+          <div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div>
+          <div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div>
+          <div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div>
+          <div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div>
+        </div>
+        <div class="status-line" style="color:var(--success);font-weight:600">Result: 1-0 · Checkmate</div>
+        <div class="btn-primary">New game</div>
+        <div class="btn-secondary">Analyze game</div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-item"><span class="icon">🏠</span>Home</div>
+        <div class="nav-item active"><span class="icon">♟</span>Play</div>
+        <div class="nav-item"><span class="icon">🎓</span>Train</div>
+        <div class="nav-item"><span class="icon">📊</span>Analyze</div>
+        <div class="nav-item"><span class="icon">⚙</span>Settings</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="annotation">
+    <h4>Interaction notes</h4>
+    <ul>
+      <li>Bot thinking: centered <code>CircularProgressIndicator</code> below board</li>
+      <li>Selected square + legal target dots (color-independent)</li>
+      <li>Last move highlights both from/to squares</li>
+      <li>Peak-End Rule: post-game Analyze CTA is secondary button, not blocking New game</li>
+    </ul>
+  </div>
+</section>
+
+<!-- TRAIN -->
+<section id="train">
+  <h2>3. Train hub</h2>
+  <p>Three training modes behind one hub. Mirrors Home card pattern for consistency.</p>
+  <div>
+    <span class="lens-tag">Mental Models</span>
+    <span class="lens-tag">Uniform Connectedness</span>
+    <span class="lens-tag">Progressive Disclosure</span>
+  </div>
+
+  <div class="wireframe-grid">
+    <div class="phone">
+      <div class="phone-status">Train hub</div>
+      <div class="app-bar">Train</div>
+      <div class="screen-body">
+        <div class="greeting">Sharpen your skills</div>
+        <div class="subtext">Drill openings, solve tactics, or learn board coordinates.</div>
+
+        <div class="card">
+          <div class="card-icon">📖</div>
+          <div class="card-text">
+            <div class="card-title">Openings Trainer</div>
+            <div class="card-sub">ECO lines with drill mode &amp; spaced repetition</div>
+          </div>
+          <div class="card-chevron">›</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🧩</div>
+          <div class="card-text">
+            <div class="card-title">Tactics Trainer</div>
+            <div class="card-sub">Daily puzzle &amp; 10-puzzle practice queue</div>
+          </div>
+          <div class="card-chevron">›</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">▦</div>
+          <div class="card-text">
+            <div class="card-title">Square Trainer</div>
+            <div class="card-sub">Find, name, and timed coordinate drills</div>
+          </div>
+          <div class="card-chevron">›</div>
+        </div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-item"><span class="icon">🏠</span>Home</div>
+        <div class="nav-item"><span class="icon">♟</span>Play</div>
+        <div class="nav-item active"><span class="icon">🎓</span>Train</div>
+        <div class="nav-item"><span class="icon">📊</span>Analyze</div>
+        <div class="nav-item"><span class="icon">⚙</span>Settings</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="annotation">
+    <h4>Sub-routes (not wireframed here — reuse Play board patterns)</h4>
+    <ul>
+      <li><strong>Openings:</strong> line picker → drill board → progress chip</li>
+      <li><strong>Tactics:</strong> mode picker (Daily / Practice) → puzzle board → result sheet</li>
+      <li><strong>Square Trainer:</strong> mode tabs (Find / Name / Timed) → board or input</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ANALYZE -->
+<section id="analyze">
+  <h2>4. Analyze</h2>
+  <p>Empty state drives import. Loaded state: header → eval → board → controls → move list.</p>
+  <div>
+    <span class="lens-tag">Progressive Disclosure</span>
+    <span class="lens-tag">Serial Position</span>
+    <span class="lens-tag">Hick's Law</span>
+  </div>
+
+  <div class="wireframe-grid">
+    <div class="phone">
+      <div class="phone-status">Empty</div>
+      <div class="app-bar with-action">
+        <span>Analyze</span>
+        <span style="color:var(--accent);font-size:1.1rem">↑</span>
+      </div>
+      <div class="screen-body">
+        <div class="empty-state">
+          <div class="empty-icon">📊</div>
+          <div class="greeting" style="font-size:1rem">Import a game to analyze</div>
+          <div class="subtext">Paste PGN, pick a saved game, or fetch from Lichess / Chess.com.</div>
+          <div class="btn-primary" style="margin-top:20px">Import game</div>
+        </div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-item"><span class="icon">🏠</span>Home</div>
+        <div class="nav-item"><span class="icon">♟</span>Play</div>
+        <div class="nav-item"><span class="icon">🎓</span>Train</div>
+        <div class="nav-item active"><span class="icon">📊</span>Analyze</div>
+        <div class="nav-item"><span class="icon">⚙</span>Settings</div>
+      </div>
+    </div>
+
+    <div class="phone">
+      <div class="phone-status">Loaded game</div>
+      <div class="app-bar with-action">
+        <span>Analyze</span>
+        <span style="color:var(--accent);font-size:1.1rem">↑</span>
+      </div>
+      <div class="screen-body">
+        <div class="card-title" style="margin-bottom:4px">PlayerOne vs PlayerTwo</div>
+        <div class="card-sub" style="margin-bottom:12px">1-0 · Lichess · 42 moves</div>
+
+        <div class="eval-bar">
+          <div class="eval-row"><span>Eval</span><span style="font-family:var(--mono)">+0.8</span></div>
+          <div class="eval-track"><div class="eval-fill"></div></div>
+        </div>
+
+        <div class="board" style="margin-bottom:12px">
+          <div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div>
+          <div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div>
+          <div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div>
+          <div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div>
+          <div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div>
+          <div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div>
+          <div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div>
+          <div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div>
+        </div>
+
+        <div class="move-controls">
+          <span>⏮</span><span>◀</span><span>24 / 42</span><span>▶</span><span>⏭</span><span>⇅</span>
+        </div>
+
+        <div class="chip-row">
+          <span class="chip">1. e4</span>
+          <span class="chip">e5</span>
+          <span class="chip">2. Nf3</span>
+          <span class="chip selected">Nc6</span>
+          <span class="chip">3. Bb5</span>
+          <span class="chip">…</span>
+        </div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-item"><span class="icon">🏠</span>Home</div>
+        <div class="nav-item"><span class="icon">♟</span>Play</div>
+        <div class="nav-item"><span class="icon">🎓</span>Train</div>
+        <div class="nav-item active"><span class="icon">📊</span>Analyze</div>
+        <div class="nav-item"><span class="icon">⚙</span>Settings</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="annotation">
+    <h4>Import sheet (bottom sheet, tabbed)</h4>
+    <ul>
+      <li>Tabs: Paste · Saved · Lichess · Chess.com — limits Hick's Law per tab</li>
+      <li>Sheet height ~280px + keyboard inset; radiusLg top corners</li>
+      <li>App bar upload icon duplicates empty-state CTA (Recognition)</li>
+    </ul>
+  </div>
+</section>
+
+<!-- SETTINGS -->
+<section id="settings">
+  <h2>5. Settings</h2>
+  <p>Grouped preferences. Segmented controls for multi-option choices; switch for boolean.</p>
+  <div>
+    <span class="lens-tag">Mapping</span>
+    <span class="lens-tag">Constraints</span>
+    <span class="lens-tag">Feedback</span>
+  </div>
+
+  <div class="wireframe-grid">
+    <div class="phone">
+      <div class="phone-status">Settings</div>
+      <div class="app-bar">Settings</div>
+      <div class="screen-body" style="padding:0">
+        <div class="settings-group">
+          <div class="settings-label">Bot difficulty</div>
+          <div class="settings-desc">Engine search depth per tier</div>
+          <div class="segmented">
+            <div class="seg-btn">Beginner</div>
+            <div class="seg-btn active">Mid</div>
+            <div class="seg-btn">Advanced</div>
+          </div>
+        </div>
+        <div class="settings-group">
+          <div class="settings-label">Board theme</div>
+          <div class="settings-desc">Square colors on all boards</div>
+          <div class="segmented">
+            <div class="seg-btn active">Classic</div>
+            <div class="seg-btn">Midnight</div>
+            <div class="seg-btn">Tournament</div>
+          </div>
+        </div>
+        <div class="switch-row">
+          <div>
+            <div class="settings-label" style="padding:0">Show coordinates</div>
+            <div class="settings-desc" style="padding:0;margin-top:4px">File &amp; rank labels on board edge</div>
+          </div>
+          <div style="width:44px;height:24px;background:var(--accent);border-radius:12px;position:relative">
+            <div style="width:20px;height:20px;background:white;border-radius:50%;position:absolute;right:2px;top:2px"></div>
+          </div>
+        </div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-item"><span class="icon">🏠</span>Home</div>
+        <div class="nav-item"><span class="icon">♟</span>Play</div>
+        <div class="nav-item"><span class="icon">🎓</span>Train</div>
+        <div class="nav-item"><span class="icon">📊</span>Analyze</div>
+        <div class="nav-item active"><span class="icon">⚙</span>Settings</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="annotation">
+    <h4>Phase 2 additions (not v1)</h4>
+    <ul>
+      <li>App theme (light shell)</li>
+      <li>Piece set picker</li>
+      <li>Engine depth slider</li>
+      <li>Data export / clear cache</li>
+    </ul>
+  </div>
+</section>
+
+<!-- FLOWS -->
+<section id="flows">
+  <h2>6. Cross-surface flows</h2>
+
+  <h3>Primary loop</h3>
+  <pre style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;font-family:var(--mono);font-size:0.8rem;color:var(--muted);overflow-x:auto">
+Home ──► Play ──► [game over] ──► Analyze
+  │                              ▲
+  └──► Recent game tap ──────────┘
+
+Train hub ──► Openings / Tactics / Squares ──► (board surfaces)
+  </pre>
+
+  <h3>Navigation IA</h3>
+  <ul>
+    <li>Bottom nav always visible (Jakob's Law — familiar 5-tab pattern)</li>
+    <li>Train sub-routes push onto stack; back returns to hub</li>
+    <li>Play → Analyze passes PGN via route extra (no re-import friction)</li>
+  </ul>
+</section>
+
+</body>
+</html>
